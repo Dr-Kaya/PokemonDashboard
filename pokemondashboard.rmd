@@ -1,0 +1,61 @@
+---
+title: "Pokemon Dashboard"
+author: "Erdogan Kaya"
+date: "`r Sys.Date()`"
+output: flexdashboard::flex_dashboard
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(plotly)
+library(crosstalk)
+
+pokemon <- read_csv("pokemon.csv")
+
+shared_pokemon <- SharedData$new(pokemon)
+
+```
+
+Choose the Pokemon Type {.sidebar}
+----------------------
+```{r}
+filter_select("poke_type", "Pokemon Type", shared_pokemon, ~`Type 1`)
+```
+
+Total Number of Pokemons based on Type
+-------------------------------------
+
+### Boxplot for Pokemon Types
+
+```{r}
+q <- shared_pokemon %>%
+  ggplot() + 
+  geom_boxplot(mapping = aes(x = `Type 1`, y = Total, fill = `Type 1`)) +
+  labs(
+    title = "Total vs Type 1",
+    x = "Type",
+    y = "Total"
+  )+ 
+  theme(axis.text.x = element_text(angle = 45))
+
+ggplotly(q)
+```
+
+Attack and Defense of Pokemons based on Types
+-------------------------------------
+
+### Scatter Plot for the Pokemon Types
+
+```{r}
+p <- shared_pokemon %>%
+  ggplot() + 
+  geom_point(mapping = aes(x = Defense, y = Attack, color = `Type 1`)) +
+  labs(
+    title = "Attack vs Defense",
+    x = "Pokemon Defense",
+    y = "Pokemon Attack"
+  )
+
+ggplotly(p)
+```
+
